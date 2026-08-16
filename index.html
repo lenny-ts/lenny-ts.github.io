@@ -94,6 +94,8 @@
     .cat-normal {
       position: relative;
       z-index: 1;
+      opacity: 1;
+      transition: opacity 30ms linear;
     }
 
     .cat-skel {
@@ -104,6 +106,7 @@
       transition: opacity 30ms linear;
     }
 
+    .cat-stage.xray .cat-normal { opacity: 0; }
     .cat-stage.xray .cat-skel { opacity: 1; }
 
     /* ---- Headline (scramble/decode) ---- */
