@@ -73,11 +73,12 @@
     }
     @media (min-width: 40rem) { .wrap { max-width: 28rem; } }
 
-    /* ---- Avatar ---- */
+    /* ---- Avatar (cat-stage with xray scan-line reveal) ---- */
     .cat-stage {
       position: relative;
       width: 7rem;
       margin: 0 auto 1rem;
+      overflow: hidden;
     }
     @media (min-width: 40rem) { .cat-stage { width: 9rem; margin-bottom: 1.5rem; } }
     @media (min-width: 64rem) { .cat-stage { width: 11rem; } }
@@ -94,7 +95,6 @@
     .cat-normal {
       position: relative;
       z-index: 1;
-      transition: opacity 30ms linear;
     }
 
     .cat-skel {
@@ -102,11 +102,78 @@
       inset: 0;
       z-index: 2;
       opacity: 0;
-      transition: opacity 30ms linear;
     }
 
-    .cat-stage.xray .cat-normal { opacity: 0; }
-    .cat-stage.xray .cat-skel { opacity: 1; }
+    /* Scan line */
+    .cat-stage::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #fff;
+      box-shadow:
+        0 0 3px 1px rgba(255, 35, 35, 0.9),
+        0 0 8px 2px rgba(255, 35, 35, 0.4);
+      z-index: 3;
+      opacity: 0;
+      pointer-events: none;
+      top: 0;
+    }
+
+    /* Scan down: reveal skeleton top to bottom */
+    .cat-stage.scan-down .cat-skel {
+      opacity: 1;
+      animation: skelReveal 0.4s linear forwards;
+    }
+    .cat-stage.scan-down .cat-normal {
+      animation: normalHide 0.4s linear forwards;
+    }
+    .cat-stage.scan-down::after {
+      animation: lineDown 0.4s linear forwards;
+    }
+
+    /* Scan up: hide skeleton bottom to top */
+    .cat-stage.scan-up .cat-skel {
+      opacity: 1;
+      animation: skelHide 0.4s linear forwards;
+    }
+    .cat-stage.scan-up .cat-normal {
+      animation: normalReveal 0.4s linear forwards;
+    }
+    .cat-stage.scan-up::after {
+      animation: lineUp 0.4s linear forwards;
+    }
+
+    @keyframes skelReveal {
+      from { clip-path: inset(0 0 100% 0); }
+      to   { clip-path: inset(0 0 0 0); }
+    }
+    @keyframes normalHide {
+      from { clip-path: inset(0 0 0 0); }
+      to   { clip-path: inset(100% 0 0 0); }
+    }
+    @keyframes lineDown {
+      0%   { top: 0%;   opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    @keyframes skelHide {
+      from { clip-path: inset(0 0 0 0); }
+      to   { clip-path: inset(0 0 100% 0); }
+    }
+    @keyframes normalReveal {
+      from { clip-path: inset(100% 0 0 0); }
+      to   { clip-path: inset(0 0 0 0); }
+    }
+    @keyframes lineUp {
+      0%   { top: 100%; opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: 0%;   opacity: 0; }
+    }
 
     /* ---- Headline (scramble/decode) ---- */
     h1 {
@@ -320,26 +387,26 @@
       decode(h1, h1.textContent, 1600);
     }
 
-    /* ---- X-ray skeleton flash on cat ---- */
+    /* ---- X-ray skeleton scan-line reveal on cat ---- */
     var stage = document.getElementById("catStage");
     if (stage && !reduce) {
       function after(fn, ms) { setTimeout(fn, ms); }
-      function setXray(on) { stage.classList.toggle("xray", on); }
-      function flash(done) {
-        setXray(true);
-        after(function () { setXray(false); }, 45);
-        after(function () { setXray(true); }, 95);
-        after(function () { setXray(false); }, 150);
-        after(done, 160);
-      }
+      var SCAN_MS = 400;
+      var HOLD_MS = 1000;
+      var WAIT_MS = 4800;
+
       function cycle() {
         after(function () {
-          flash(function () {
+          stage.classList.add("scan-down");
+          after(function () {
+            stage.classList.remove("scan-down");
+            stage.classList.add("scan-up");
             after(function () {
-              flash(function () { cycle(); });
-            }, 1150);
-          });
-        }, 4800);
+              stage.classList.remove("scan-up");
+              cycle();
+            }, SCAN_MS);
+          }, SCAN_MS + HOLD_MS);
+        }, WAIT_MS);
       }
       cycle();
     }
