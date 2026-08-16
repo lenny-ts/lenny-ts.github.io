@@ -98,7 +98,7 @@
       transition: opacity 30ms linear;
     }
 
-    .cat-skel {
+    /* .cat-skel {
       position: absolute;
       inset: 0;
       z-index: 2;
@@ -107,7 +107,7 @@
     }
 
     .cat-stage.xray .cat-normal { opacity: 0; }
-    .cat-stage.xray .cat-skel { opacity: 1; }
+    .cat-stage.xray .cat-skel { opacity: 1; } */
 
     /* ---- Headline (scramble/decode) ---- */
     h1 {
@@ -249,7 +249,7 @@
 
       <div class="cat-stage" id="catStage">
         <img class="cat-normal" src="avatar.gif?v=4" alt="cat with a vibe" draggable="false" />
-        <img class="cat-skel" src="avatar-skel.gif?v=2" alt="" aria-hidden="true" draggable="false" />
+        <!-- <img class="cat-skel" src="avatar-skel.gif?v=2" alt="" aria-hidden="true" draggable="false" /> -->
       </div>
 
       <h1 id="headline">lenny</h1>
@@ -322,7 +322,7 @@
     }
 
     /* ---- X-ray skeleton strobe flash on cat (netsky-style) ---- */
-    var stage = document.getElementById("catStage");
+    /* var stage = document.getElementById("catStage");
     if (stage && !reduce) {
       var timers = [];
       function after(fn, ms) {
@@ -348,7 +348,7 @@
         }, 4800);
       }
       cycle();
-    }
+    } */
   })();
   </script>
 </body>
